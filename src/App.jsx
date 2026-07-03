@@ -4,18 +4,40 @@ console.log(carsdata)
 function App(){
   const [data,setData]=useState(carsdata)
   const [search,setsearch]=useState("")
+  const [transmission,setTranismission]=useState("");
+  const [Type,setType]=useState("");
+  const [Available,setAvailable]=useState(false)
+  const [sortprice,selectsortprice]=useState("")
+  const [len,setlen]=useState(carsdata.length)
   useEffect(()=>{
-   if (search.trim() === "") {
+   if (search.trim() === ""&& transmission==""&&Type==""&& Available=="") {
     setData(carsdata);
     return;
 }
     const timer=setTimeout(() => {
         const query=search.trim().toLowerCase()
-        const filteredData = carsdata.filter((car) =>car.name.toLowerCase().includes(query));
-        setData(filteredData)
+        const filteredData = carsdata.filter((car) =>(car.name.toLowerCase().includes(query))&&
+      car.transmission.toLowerCase().includes(transmission.toLocaleLowerCase())&&car.type.toLowerCase().includes(Type.toLocaleLowerCase())&&car.available==Available
+      );
+      setlen(filteredData.length)
+      if (sortprice === "0") {
+    filteredData.sort((a, b) => a.pricePerDay - b.pricePerDay);
+}
+else if (sortprice === "1") {
+    filteredData.sort((a, b) => b.pricePerDay - a.pricePerDay);
+}
+     setData(filteredData)
     }, 300);
     return () => clearTimeout(timer);
-  },[search])
+  }, [search, transmission, Type, Available, sortprice])
+  const resetFilters = () => {
+    setsearch("");
+    setTranismission("");
+    setType("");
+    setAvailable(false);
+    selectsortprice("");
+};
+
   return (
     <>
 <div className="p-4">
@@ -26,8 +48,42 @@ function App(){
     onChange={(e) => setsearch(e.target.value)}
     className="w-full max-w-md mx-auto block px-4 py-2 border border-gray-300 rounded-lg "
   />
+  <select onChange={(e)=>setType(e.target.value)}>--Type--
+    <option value="">All</option>
+    <option value="Economy">Economy</option>
+    <option value="Sedan">Sedan</option>
+    <option value="SUV">SUV</option>
+    <option value="Luxury">Luxury</option>
+  </select>
+ 
+   <select onChange={(e)=>setTranismission(e.target.value)}>--Type--
+      <option value="">All</option>
+    <option value="Automatic">Automatic</option>
+    <option value="Manual">Manual</option>
+  
+  </select>
+    <select onChange={(e)=>selectsortprice(e.target.value)}>--Price--
+    <option value="0">Price Low to High</option>
+    <option value="1">Price High to Low</option>
+  
+  </select>
+   <input
+  type="checkbox"
+  checked={Available}
+  onChange={(e) => setAvailable(e.target.checked)}
+/>
+   <div>{`Showing ${len} of ${carsdata.length} cars`}</div>
 </div>
+
      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    {data.length==0 &&  (
+        <>
+        <p>No cars found.</p>
+        <button onClick={resetFilters}>
+            Reset Filters
+        </button>
+        </>
+    )}
   {data?.map((value) => (
     <div
       key={value?.id}
