@@ -2,14 +2,16 @@ import carsdata from "../data/Cars.json";
 
 async function getcars() {
   return new Promise((resolve, reject) => {
+
     setTimeout(() => {
-      const shouldFail = Math.random() < 0.2;
+      const shouldFail = Math.random() < 0.1;
+
       if (shouldFail) {
-        reject(new Error("API error"));
+        reject(new Error("Failed to fetch cars"));
       } else {
         resolve(carsdata);
       }
-    }, 2000);
+    }, 1000);
   });
 }
 
