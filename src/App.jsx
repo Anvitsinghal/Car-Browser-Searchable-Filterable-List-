@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import useCars from "./hooks/useCars";
 import { useSearchParams } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 function App() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const {
@@ -316,6 +317,7 @@ function App() {
 
           <div
             key={value.id}
+              onClick={() => navigate(`/cars/${value.id}`)}
             className="border rounded-lg p-4 shadow-sm bg-white"
           >
 
