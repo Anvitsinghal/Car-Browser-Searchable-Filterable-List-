@@ -1,24 +1,47 @@
 import { useEffect, useState } from "react";
-import carsdata from "../src/data/Cars.json"
+import getcars from "./api/carsdataApi";
 import { useSearchParams } from "react-router-dom";
-console.log(carsdata)
+
 function App(){
   const [searchParams, setSearchParams] = useSearchParams();
-  const [data,setData]=useState(carsdata)
+  const [data,setData]=useState([])
   const [search,setsearch]=useState(searchParams.get("search") || "")
   const [transmission,setTranismission]=useState(searchParams.get("transmission") || "");
   const [Type,setType]=useState(searchParams.get("type") || "");
   const [Available,setAvailable]=useState(searchParams.get("available") === "true")
   const [sortprice,selectsortprice]=useState(searchParams.get("sortPrice") || "")
-  const [len,setlen]=useState(carsdata.length)
+  const [len,setlen]=useState(0)
+  const [Loading,setLoading]=useState(false)
+  const [Error,setError]=useState("")
+  const [Cars,setCars]=useState([])
+  useEffect(() => {
+  const fetchCars = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await getcars();
+
+      setCars(result);
+      setData(result);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCars();
+}, []);
   useEffect(()=>{
+    
   if (search.trim() === "" && transmission === "" && Type === "" && sortprice==""&&  !Available) {
-    setData(carsdata);
+    setData(Cars);
     return;
 }
     const timer=setTimeout(() => {
         const query=search.trim().toLowerCase()
-        const filteredData = carsdata.filter((car) =>(car.name.toLowerCase().includes(query))&&
+        const filteredData = Cars.filter((car) =>(car.name.toLowerCase().includes(query))&&
       car.transmission.toLowerCase().includes(transmission.toLocaleLowerCase())&&car.type.toLowerCase().includes(Type.toLocaleLowerCase())&&(!Available || car.available)
       );
       setlen(filteredData.length)
@@ -118,7 +141,7 @@ else if (sortprice === "1") {
   <span className="text-gray-700 font-medium">Available Only</span>
 </label>
 </div>
-   <div>{`Showing ${data.length} of ${carsdata.length} cars`}</div>
+   <div>{`Showing ${data.length} of ${Cars.length} cars`}</div>
 </div>
 
 
