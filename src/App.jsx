@@ -34,7 +34,9 @@ function App() {
   const [sortprice, selectsortprice] = useState(
     searchParams.get("sortPrice") || ""
   );
-  
+  const [minprice,setminprice]=useState(searchParams.get("minprice")||"")
+   const [maxprice,setmaxprice]=useState(searchParams.get("maxprice")||"")
+
   const updateURL = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
 
@@ -54,7 +56,8 @@ function App() {
       transmission === "" &&
       Type === "" &&
       sortprice === "" &&
-      !Available
+      !Available &&
+      minprice=="" && maxprice==""
     ) {
       setData(Cars);
       return;
@@ -73,7 +76,8 @@ function App() {
           car.type
             .toLowerCase()
             .includes(Type.toLowerCase()) &&
-          (!Available || car.available)
+          (!Available || car.available) &&
+          car.pricePerDay>=(minprice==""?0:minprice) && car.pricePerDay<=(maxprice==""?100000:maxprice)
       );
 
       if (sortprice === "0") {
@@ -101,6 +105,8 @@ function App() {
     Available,
     sortprice,
     Cars,
+    minprice,
+    maxprice,
   ]);
   
   const resetFilters = () => {
@@ -285,7 +291,8 @@ function App() {
             </span>
 
           </label>
-
+         <input type="number" value={minprice} onChange={(e)=>{setminprice(e.target.value); updateURL("minprice",e.target.value);}} placeholder="Enter min price"/>
+         <input type="number" value={maxprice} onChange={(e)=>{setmaxprice(e.target.value);  updateURL("maxprice",e.target.value); }} placeholder="Enter max price"/>
         </div>
         <div className="mt-4">
 
