@@ -36,7 +36,7 @@ function App() {
   );
   const [minprice,setminprice]=useState(searchParams.get("minprice")||"")
    const [maxprice,setmaxprice]=useState(searchParams.get("maxprice")||"")
-
+const [seats,setseats]=useState(searchParams.get("seats")||"")
   const updateURL = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
 
@@ -57,7 +57,7 @@ function App() {
       Type === "" &&
       sortprice === "" &&
       !Available &&
-      minprice=="" && maxprice==""
+      minprice=="" && maxprice==""&& seats==""
     ) {
       setData(Cars);
       return;
@@ -77,7 +77,7 @@ function App() {
             .toLowerCase()
             .includes(Type.toLowerCase()) &&
           (!Available || car.available) &&
-          car.pricePerDay>=(minprice==""?0:minprice) && car.pricePerDay<=(maxprice==""?100000:maxprice)
+          car.pricePerDay>=(minprice==""?0:minprice) && car.pricePerDay<=(maxprice==""?100000:maxprice) && car.seats==seats
       );
 
       if (sortprice === "0") {
@@ -107,6 +107,7 @@ function App() {
     Cars,
     minprice,
     maxprice,
+    seats
   ]);
   
   const resetFilters = () => {
@@ -263,6 +264,37 @@ function App() {
 
             <option value="1">
               Price High to Low
+            </option>
+
+          </select>
+           <select
+            className="w-full md:w-auto bg-white border border-gray-300 text-gray-700 py-2 px-4"
+            value={seats}
+            onChange={(e) => {
+
+              setseats(e.target.value);
+
+              updateURL(
+                "seats",
+                e.target.value
+              );
+
+            }}
+          >
+
+            <option value="">
+              --Select Seats--
+            </option>
+
+            <option value="4">
+              4
+            </option>
+
+            <option value="5">
+             5
+            </option>
+            <option value="7">
+             7
             </option>
 
           </select>
