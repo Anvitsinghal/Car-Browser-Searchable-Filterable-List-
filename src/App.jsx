@@ -77,7 +77,8 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
             .toLowerCase()
             .includes(Type.toLowerCase()) &&
           (!Available || car.available) &&
-          car.pricePerDay>=(minprice==""?0:minprice) && car.pricePerDay<=(maxprice==""?100000:maxprice) && car.seats==seats
+          car.pricePerDay>=(minprice==""?0:minprice) && car.pricePerDay<=(maxprice==""?100000:maxprice) &&
+    (seats === "" || car.seats === Number(seats))
       );
 
       if (sortprice === "0") {
