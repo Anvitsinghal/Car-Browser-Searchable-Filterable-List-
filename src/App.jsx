@@ -366,6 +366,16 @@ if (name === "0") {
                   <span className="font-bold ml-3 border-2" onClick={()=>{
                     const newarr= Type.filter((val,id)=>idx!=id);
                     setType(newarr)
+                    
+  const newParams = new URLSearchParams(searchParams);
+
+  newParams.delete("type");
+
+  newarr.forEach((type) => {
+    newParams.append("type", type);
+  });
+
+  setSearchParams(newParams);
                   }}>X</span>
                 </div>
               );
