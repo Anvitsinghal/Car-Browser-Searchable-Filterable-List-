@@ -34,6 +34,7 @@ function App() {
   const [sortprice, selectsortprice] = useState(
     searchParams.get("sortPrice") || ""
   );
+  const [name,setname]=useState(  searchParams.get("name") || "")
   const [minprice,setminprice]=useState(searchParams.get("minprice")||"")
    const [maxprice,setmaxprice]=useState(searchParams.get("maxprice")||"")
 const [seats,setseats]=useState(searchParams.get("seats")||"")
@@ -57,7 +58,7 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
       Type.length === 0&&
       sortprice === "" &&
       !Available &&
-      minprice=="" && maxprice==""&& seats==""
+      minprice=="" && maxprice==""&& seats=="" && name==""
     ) {
       setData(Cars);
       return;
@@ -85,12 +86,18 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
         );
       }
 
-      else if (sortprice === "1") {
+       if (sortprice === "1") {
         filteredData.sort(
           (a, b) => b.pricePerDay - a.pricePerDay
         );
       }
+     if (name === "1") {
+  filteredData.sort((a, b) => a.name.localeCompare(b.name));
+}
 
+if (name === "0") {
+  filteredData.sort((a, b) => b.name.localeCompare(a.name));
+}
       setData(filteredData);
 
     }, 300);
@@ -106,7 +113,8 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
     Cars,
     minprice,
     maxprice,
-    seats
+    seats,
+    name
   ]);
   
   const resetFilters = () => {
@@ -313,6 +321,14 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
              7
             </option>
 
+          </select>
+          <select  className="w-full md:w-auto bg-white border border-gray-300 text-gray-700 py-2 px-4" value={name} onChange={(e)=>{
+                   setname(e.target.value)
+                   updateURL("name",e.target.value)
+          }}>
+            <option value="">Name</option>
+            <option value="1">A-Z</option>
+            <option value="0">Z-A</option>
           </select>
           <label className="flex items-center gap-2 cursor-pointer select-none">
 
