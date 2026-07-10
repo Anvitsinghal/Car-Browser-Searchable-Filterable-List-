@@ -24,7 +24,7 @@ function App() {
   );
 
   const [Type, setType] = useState(
-    searchParams.get("type") || ""
+    searchParams.getAll("type") || []
   );
 
   const [Available, setAvailable] = useState(
@@ -54,7 +54,7 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
     if (
       search.trim() === "" &&
       transmission === "" &&
-      Type === "" &&
+      Type.length === 0&&
       sortprice === "" &&
       !Available &&
       minprice=="" && maxprice==""&& seats==""
@@ -73,9 +73,7 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
           car.transmission
             .toLowerCase()
             .includes(transmission.toLowerCase()) &&
-          car.type
-            .toLowerCase()
-            .includes(Type.toLowerCase()) &&
+       (Type.length === 0 || Type.includes(car.type)) &&
           (!Available || car.available) &&
           car.pricePerDay>=(minprice==""?0:minprice) && car.pricePerDay<=(maxprice==""?100000:maxprice) &&
     (seats === "" || car.seats === Number(seats))
@@ -114,7 +112,7 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
   const resetFilters = () => {
     setsearch("");
     setTranismission("");
-    setType("");
+    setType([]);
     setAvailable(false);
     selectsortprice("");
 
@@ -178,40 +176,57 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
           
           <select
             className="w-full md:w-auto bg-white border border-gray-300 text-gray-700 py-2 px-4"
-            value={Type}
-            onChange={(e) => {
+            value=""
+          onChange={(e) => {
+  const value = e.target.value;
 
-              setType(e.target.value);
+  if (!value || Type.includes(value)) return;
 
-              updateURL(
-                "type",
-                e.target.value
-              );
+  const newTypes = [...Type, value];
 
-            }}
+  setType(newTypes);
+
+  const newParams = new URLSearchParams(searchParams);
+
+  newParams.delete("type");
+
+  newTypes.forEach((type) => {
+    newParams.append("type", type);
+  });
+
+  setSearchParams(newParams);
+}}
           >
 
             <option value="">
               --Car Type--
             </option>
-
+             {!Type?.includes("Economy")&&
             <option value="Economy">
               Economy
             </option>
-
+}
+{
+  !Type?.includes("Sedan")&&
             <option value="Sedan">
               Sedan
             </option>
-
+}
+{
+  !Type?.includes("SUV")&&
             <option value="SUV">
               SUV
             </option>
-
+}
+{
+  !Type?.includes("Luxury")&&
             <option value="Luxury">
               Luxury
             </option>
+}
 
           </select>
+        
           <select
             className="w-full md:w-auto bg-white border border-gray-300 text-gray-700 py-2 px-4"
             value={transmission}
@@ -327,6 +342,19 @@ const [seats,setseats]=useState(searchParams.get("seats")||"")
          <input type="number" value={minprice} onChange={(e)=>{setminprice(e.target.value); updateURL("minprice",e.target.value);}} placeholder="Enter min price"/>
          <input type="number" value={maxprice} onChange={(e)=>{setmaxprice(e.target.value);  updateURL("maxprice",e.target.value); }} placeholder="Enter max price"/>
         </div>
+          {
+            Type && Type?.map((val,idx)=>{
+              return (
+                <div key={idx} className="mt-2">
+                  <span className="text-xl font-bold bg-amber-300 text-black-500 border-amber-300">{val}</span>
+                  <span className="font-bold ml-3 border-2" onClick={()=>{
+                    const newarr= Type.filter((val,id)=>idx!=id);
+                    setType(newarr)
+                  }}>X</span>
+                </div>
+              );
+            })
+          }
         <div className="mt-4">
 
           {`Showing ${data.length} of ${Cars.length} cars`}
